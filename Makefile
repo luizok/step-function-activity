@@ -6,7 +6,8 @@ infra-deploy:
 go:
 	export APPROVER_WORKER_ARN=$(shell terraform output -json | jq -r '.approver_activity_arn.value') && \
 	cd app/ && \
-	go run main.go
+	go build -o main && \
+	./main
 
 start-execution:
 	export STATE_MACHINE_ARN=$(shell terraform output -json | jq -r '.state_machine_arn.value') && \
