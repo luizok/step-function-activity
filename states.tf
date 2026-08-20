@@ -17,6 +17,10 @@ locals {
   generateDatesSingleLine = join("", [for s in split("\n", local.generateDates) : trimspace(s)])
 }
 
+resource "aws_sfn_activity" "approver" {
+  name = "${var.project_name}-approver-worker"
+}
+
 resource "aws_sfn_state_machine" "this" {
   name     = "${var.project_name}-orchestrator"
   role_arn = aws_iam_role.sfn_role.arn
@@ -77,7 +81,13 @@ resource "aws_sfn_state_machine" "this" {
           processed_partition = "{% 'data_movimento=' & $data_movimento & '/' %}"
           job_run_id          = "{% $uuid() %}"
         }
-        End = true
+        Next = "Send To Approver"
+      }
+
+      "Send To Approver" = {
+        Type     = "Task"
+        Resource = aws_sfn_activity.approver.id
+        End      = true
       }
     }
   })
