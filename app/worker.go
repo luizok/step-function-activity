@@ -23,7 +23,7 @@ type ActivityWorker[I any, O SendTaskResponse] struct {
 	workerName  string
 	activityArn string
 	sfnClient   *sfn.Client
-	doFunc      func(I) (O, error)
+	doFunc      ActivityWorkerFunc[I, O]
 }
 
 func (aw *ActivityWorker[I, O]) Initialize(workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) {
