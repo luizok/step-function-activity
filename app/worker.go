@@ -11,6 +11,8 @@ import (
 )
 
 type SendTaskResponse interface {
+	SetWorkerName(string)
+	WorkerName() string
 	SetTaskToken(string)
 	TaskToken() string
 	HasError() bool
@@ -25,10 +27,16 @@ type ApproverWorker[I any, O SendTaskResponse] struct {
 }
 
 func (aw *ApproverWorker[I, O]) Initialize(workerName, activityArn string, sfnClient *sfn.Client, doFunc ApproverWorkerFunc[I, O]) {
-	aw.workerName = workerName
-	aw.activityArn = activityArn
-	aw.sfnClient = sfnClient
-	aw.doFunc = doFunc
+
+}
+
+func NewApproverWorker[I any, O SendTaskResponse](workerName, activityArn string, sfnClient *sfn.Client, doFunc ApproverWorkerFunc[I, O]) *ApproverWorker[I, O] {
+	return &ApproverWorker[I, O]{
+		workerName:  workerName,
+		activityArn: activityArn,
+		sfnClient:   sfnClient,
+		doFunc:      doFunc,
+	}
 }
 
 func (aw *ApproverWorker[I, O]) Start(ctx context.Context) {
@@ -60,6 +68,7 @@ func (aw *ApproverWorker[I, O]) Start(ctx context.Context) {
 			fmt.Print(err)
 		}
 
+		outputData.SetWorkerName(aw.workerName)
 		outputData.SetTaskToken(*output.TaskToken)
 		outputDataJson, err := json.Marshal(&outputData)
 		if err != nil {

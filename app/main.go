@@ -17,11 +17,12 @@ type ApproverWorkerInput struct {
 }
 
 type ApproverWorkerOutput struct {
-	TaskTokenF string `json:"task_token"`
-	HasErrorF  bool   `json:"has_error"`
-	ApprovedBy string `json:"approved_by"`
-	NativeOS   string `json:"native_os"`
-	NativeArch string `json:"native_arch"`
+	WorkerNameF string `json:"worker_name"`
+	TaskTokenF  string `json:"task_token"`
+	HasErrorF   bool   `json:"has_error"`
+	ApprovedBy  string `json:"approved_by"`
+	NativeOS    string `json:"native_os"`
+	NativeArch  string `json:"native_arch"`
 	ApproverWorkerInput
 }
 
@@ -35,6 +36,14 @@ func (awo ApproverWorkerOutput) TaskToken() string {
 
 func (awo *ApproverWorkerOutput) SetTaskToken(taskToken string) {
 	awo.TaskTokenF = taskToken
+}
+
+func (awo ApproverWorkerOutput) WorkerName() string {
+	return awo.WorkerNameF
+}
+
+func (awo *ApproverWorkerOutput) SetWorkerName(workerName string) {
+	awo.WorkerNameF = workerName
 }
 
 func doSomeApproval(input ApproverWorkerInput) (*ApproverWorkerOutput, error) {
@@ -75,7 +84,6 @@ func main() {
 	activityArn := os.Getenv("APPROVER_WORKER_ARN")
 	workerName := "golang-worker-01"
 
-	aw := ApproverWorker[ApproverWorkerInput, *ApproverWorkerOutput]{}
-	aw.Initialize(workerName, activityArn, sfnClient, doSomeApproval)
+	aw := NewApproverWorker(workerName, activityArn, sfnClient, doSomeApproval)
 	aw.Start(ctx)
 }
