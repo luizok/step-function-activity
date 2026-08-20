@@ -26,6 +26,9 @@ func main() {
 	activityArn := os.Getenv("APPROVER_WORKER_ARN")
 	workerName := "golang-worker-01"
 
-	aw := NewApproverWorker(workerName, activityArn, sfnClient, doSomeApproval)
-	aw.Start(ctx)
+	// aw := NewActivityWorker(workerName, activityArn, sfnClient, doSomeApproval)
+	// aw.Start(ctx)
+
+	dw := NewActivityWorker(workerName, activityArn, sfnClient, cancelProcessing)
+	dw.Start(ctx)
 }

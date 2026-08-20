@@ -17,21 +17,21 @@ type SendTaskResponse interface {
 	TaskToken() string
 	HasError() bool
 }
-type ApproverWorkerFunc[I any, O SendTaskResponse] func(I) (O, error)
+type ActivityWorkerFunc[I any, O SendTaskResponse] func(I) (O, error)
 
-type ApproverWorker[I any, O SendTaskResponse] struct {
+type ActivityWorker[I any, O SendTaskResponse] struct {
 	workerName  string
 	activityArn string
 	sfnClient   *sfn.Client
 	doFunc      func(I) (O, error)
 }
 
-func (aw *ApproverWorker[I, O]) Initialize(workerName, activityArn string, sfnClient *sfn.Client, doFunc ApproverWorkerFunc[I, O]) {
+func (aw *ActivityWorker[I, O]) Initialize(workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) {
 
 }
 
-func NewApproverWorker[I any, O SendTaskResponse](workerName, activityArn string, sfnClient *sfn.Client, doFunc ApproverWorkerFunc[I, O]) *ApproverWorker[I, O] {
-	return &ApproverWorker[I, O]{
+func NewActivityWorker[I any, O SendTaskResponse](workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
+	return &ActivityWorker[I, O]{
 		workerName:  workerName,
 		activityArn: activityArn,
 		sfnClient:   sfnClient,
@@ -39,7 +39,7 @@ func NewApproverWorker[I any, O SendTaskResponse](workerName, activityArn string
 	}
 }
 
-func (aw *ApproverWorker[I, O]) Start(ctx context.Context) {
+func (aw *ActivityWorker[I, O]) Start(ctx context.Context) {
 	fmt.Println("Polling for an activity task...")
 	for {
 		output, err := aw.sfnClient.GetActivityTask(ctx, &sfn.GetActivityTaskInput{
