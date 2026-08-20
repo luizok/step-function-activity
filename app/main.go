@@ -100,7 +100,7 @@ func main() {
 		fmt.Printf("JSON Output Data: %+v\n", outputData)
 
 		if !outputData.HasError {
-			resSuccess, err := sfnClient.SendTaskSuccess(
+			_, err := sfnClient.SendTaskSuccess(
 				ctx,
 				&sfn.SendTaskSuccessInput{
 					TaskToken: aws.String(*output.TaskToken),
@@ -112,12 +112,10 @@ func main() {
 				fmt.Print(err)
 			}
 
-			fmt.Print(resSuccess)
-
 			continue
 		}
 
-		resError, err := sfnClient.SendTaskFailure(
+		_, err = sfnClient.SendTaskFailure(
 			ctx,
 			&sfn.SendTaskFailureInput{
 				TaskToken: aws.String(*output.TaskToken),
@@ -128,7 +126,5 @@ func main() {
 		if err != nil {
 			fmt.Print(err)
 		}
-
-		fmt.Print(resError)
 	}
 }

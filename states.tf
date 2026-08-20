@@ -33,7 +33,7 @@ resource "aws_sfn_state_machine" "this" {
       "Parse Input Data" = {
         Type = "Pass"
         Assign = {
-          data_movimento = "{% $now('[Y]-[M01]-[D01]', '-0300') %}"
+          data_movimento = "{% $fromMillis($toMillis($states.input.datetime), '[Y]-[M01]-[D01]', '-0300') %}"
         }
         Next = "Generate Next Processing Dates"
       }
