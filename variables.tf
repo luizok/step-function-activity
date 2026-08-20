@@ -1,4 +1,4 @@
 variable "project_name" {
-    type    = string
-    default = "sfn-activity"
+  type    = string
+  default = "sfn-activity"
 }
