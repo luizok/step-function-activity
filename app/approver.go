@@ -12,12 +12,12 @@ type ApproverWorkerInput struct {
 }
 
 type ApproverWorkerOutput struct {
-	WorkerNameF string `json:"worker_name"`
-	TaskTokenF  string `json:"task_token"`
-	HasErrorF   bool   `json:"has_error"`
-	ApprovedBy  string `json:"approved_by"`
-	NativeOS    string `json:"native_os"`
-	NativeArch  string `json:"native_arch"`
+	WorkerNameF string    `json:"worker_name"`
+	TaskTokenF  TaskToken `json:"task_token"`
+	HasErrorF   bool      `json:"has_error"`
+	ApprovedBy  string    `json:"approved_by"`
+	NativeOS    string    `json:"native_os"`
+	NativeArch  string    `json:"native_arch"`
 	ApproverWorkerInput
 }
 
@@ -25,11 +25,11 @@ func (awo ApproverWorkerOutput) HasError() bool {
 	return awo.HasErrorF
 }
 
-func (awo ApproverWorkerOutput) TaskToken() string {
+func (awo ApproverWorkerOutput) TaskToken() TaskToken {
 	return awo.TaskTokenF
 }
 
-func (awo *ApproverWorkerOutput) SetTaskToken(taskToken string) {
+func (awo *ApproverWorkerOutput) SetTaskToken(taskToken TaskToken) {
 	awo.TaskTokenF = taskToken
 }
 

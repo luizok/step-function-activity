@@ -13,10 +13,17 @@ import (
 type ActivityOutputer interface {
 	SetWorkerName(string)
 	WorkerName() string
-	SetTaskToken(string)
-	TaskToken() string
+	SetTaskToken(TaskToken)
+	TaskToken() TaskToken
 	HasError() bool
 }
+
+type TaskToken string
+
+func (tt TaskToken) String() string {
+	return string(tt[:32]) + "..."
+}
+
 type ActivityWorkerFunc[I any, O ActivityOutputer] func(I) (O, error)
 
 type ActivityWorker[I any, O ActivityOutputer] struct {
@@ -72,7 +79,7 @@ func (aw *ActivityWorker[I, O]) Start(ctx context.Context) {
 		}
 
 		outputData.SetWorkerName(aw.workerName)
-		outputData.SetTaskToken(*output.TaskToken)
+		outputData.SetTaskToken(TaskToken(*output.TaskToken))
 		outputDataJson, err := json.Marshal(&outputData)
 		if err != nil {
 			fmt.Print(err)
@@ -84,7 +91,7 @@ func (aw *ActivityWorker[I, O]) Start(ctx context.Context) {
 			_, err := aw.sfnClient.SendTaskSuccess(
 				ctx,
 				&sfn.SendTaskSuccessInput{
-					TaskToken: aws.String(outputData.TaskToken()),
+					TaskToken: aws.String(string(outputData.TaskToken())),
 					Output:    aws.String(string(outputDataJson)),
 				},
 			)
@@ -99,7 +106,7 @@ func (aw *ActivityWorker[I, O]) Start(ctx context.Context) {
 		_, err = aw.sfnClient.SendTaskFailure(
 			ctx,
 			&sfn.SendTaskFailureInput{
-				TaskToken: aws.String(outputData.TaskToken()),
+				TaskToken: aws.String(string(outputData.TaskToken())),
 				Cause:     aws.String(string(outputDataJson)),
 			},
 		)

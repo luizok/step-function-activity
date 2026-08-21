@@ -11,10 +11,10 @@ type DisapproverWorkerInput struct {
 }
 
 type DisapproverWorkerOutput struct {
-	WorkerNameF string `json:"worker_name"`
-	TaskTokenF  string `json:"task_token"`
-	HasErrorF   bool   `json:"has_error"`
-	RejectedBy  string `json:"reject_by"`
+	WorkerNameF string    `json:"worker_name"`
+	TaskTokenF  TaskToken `json:"task_token"`
+	HasErrorF   bool      `json:"has_error"`
+	RejectedBy  string    `json:"reject_by"`
 	DisapproverWorkerInput
 }
 
@@ -22,11 +22,11 @@ func (awo DisapproverWorkerOutput) HasError() bool {
 	return awo.HasErrorF
 }
 
-func (awo DisapproverWorkerOutput) TaskToken() string {
+func (awo DisapproverWorkerOutput) TaskToken() TaskToken {
 	return awo.TaskTokenF
 }
 
-func (awo *DisapproverWorkerOutput) SetTaskToken(taskToken string) {
+func (awo *DisapproverWorkerOutput) SetTaskToken(taskToken TaskToken) {
 	awo.TaskTokenF = taskToken
 }
 
