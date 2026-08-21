@@ -26,10 +26,6 @@ type ActivityWorker[I any, O ActivityOutput] struct {
 	doFunc      ActivityWorkerFunc[I, O]
 }
 
-func (aw *ActivityWorker[I, O]) Initialize(workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) {
-
-}
-
 func NewActivityWorker[I any, O ActivityOutput](workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
 	return &ActivityWorker[I, O]{
 		workerName:  workerName,
