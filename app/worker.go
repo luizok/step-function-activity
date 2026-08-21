@@ -10,23 +10,23 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sfn"
 )
 
-type ActivityOutput interface {
+type ActivityOutputer interface {
 	SetWorkerName(string)
 	WorkerName() string
 	SetTaskToken(string)
 	TaskToken() string
 	HasError() bool
 }
-type ActivityWorkerFunc[I any, O ActivityOutput] func(I) (O, error)
+type ActivityWorkerFunc[I any, O ActivityOutputer] func(I) (O, error)
 
-type ActivityWorker[I any, O ActivityOutput] struct {
+type ActivityWorker[I any, O ActivityOutputer] struct {
 	workerName  string
 	activityArn string
 	sfnClient   *sfn.Client
 	doFunc      ActivityWorkerFunc[I, O]
 }
 
-func NewActivityWorker[I any, O ActivityOutput](workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
+func NewActivityWorker[I any, O ActivityOutputer](workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
 	return &ActivityWorker[I, O]{
 		workerName:  workerName,
 		activityArn: activityArn,
