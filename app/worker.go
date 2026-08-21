@@ -22,11 +22,18 @@ type ActivityWorkerFunc[I any, O ActivityOutputer] func(I) (O, error)
 type ActivityWorker[I any, O ActivityOutputer] struct {
 	workerName  string
 	activityArn string
-	sfnClient   *sfn.Client
+	sfnClient   AwsStatesClient
 	doFunc      ActivityWorkerFunc[I, O]
 }
 
-func NewActivityWorker[I any, O ActivityOutputer](workerName, activityArn string, sfnClient *sfn.Client, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
+type AwsStatesClient interface {
+	GetActivityTask(ctx context.Context, params *sfn.GetActivityTaskInput, optFns ...func(*sfn.Options)) (*sfn.GetActivityTaskOutput, error)
+	SendTaskSuccess(ctx context.Context, params *sfn.SendTaskSuccessInput, optFns ...func(*sfn.Options)) (*sfn.SendTaskSuccessOutput, error)
+	SendTaskFailure(ctx context.Context, params *sfn.SendTaskFailureInput, optFns ...func(*sfn.Options)) (*sfn.SendTaskFailureOutput, error)
+	SendTaskHeartbeat(ctx context.Context, params *sfn.SendTaskHeartbeatInput, optFns ...func(*sfn.Options)) (*sfn.SendTaskHeartbeatOutput, error)
+}
+
+func NewActivityWorker[I any, O ActivityOutputer](workerName, activityArn string, sfnClient AwsStatesClient, doFunc ActivityWorkerFunc[I, O]) *ActivityWorker[I, O] {
 	return &ActivityWorker[I, O]{
 		workerName:  workerName,
 		activityArn: activityArn,
